@@ -588,7 +588,7 @@ class usu
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $cfg_setup)
 		{
-			if (strpos($config_name, 'legend') !== false || (!isset($cfg_array[$config_name]) && @$cfg_setup['method'] != 'select_multiple'))
+			if ((!isset($cfg_array[$config_name]) && @$cfg_setup['method'] != 'select_multiple') || strpos($config_name, 'legend') !== false)
 			{
 				continue;
 			}

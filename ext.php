@@ -9,6 +9,11 @@
 
 namespace phpbbseo\usu;
 
+/**
+* ext Class
+* www.phpBB-SEO.ir
+* @package Ultimate phpBB SEO Friendly URL
+*/
 class ext extends \phpbb\extension\base
 {
     public function is_enableable()
