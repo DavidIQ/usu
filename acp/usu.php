@@ -47,6 +47,12 @@ class usu
 	/** @var \phpbb\language\language */
 	protected \phpbb\language\language $language;
 
+	/** @var string */
+	protected string $tpl_name;
+
+	/** @var string */
+	protected string $page_title;
+
 	public $u_action;
 	public $new_config = [];
 	public $dyn_select = [];
@@ -588,7 +594,7 @@ class usu
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $cfg_setup)
 		{
-			if ((!isset($cfg_array[$config_name]) && @$cfg_setup['method'] != 'select_multiple') || strpos($config_name, 'legend') !== false)
+			if (!is_array($cfg_setup) || (!isset($cfg_array[$config_name]) && @$cfg_setup['method'] != 'select_multiple') || strpos($config_name, 'legend') !== false)
 			{
 				continue;
 			}

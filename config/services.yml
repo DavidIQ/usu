@@ -35,3 +35,6 @@ services:
 
     template_context:
         class: phpbbseo\usu\core\template_context
+        arguments:
+            - '@phpbbseo.usu.core'
+            - '%core.php_ext%'

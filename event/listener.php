@@ -106,20 +106,24 @@ class listener implements EventSubscriberInterface
 	public static function getSubscribedEvents()
 	{
 		return [
-			'core.common'								=> 'core_common',
-			'core.user_setup'							=> 'core_user_setup',
-			'core.append_sid'							=> 'core_append_sid',
-			'core.pagination_generate_page_link'		=> 'core_pagination_generate_page_link',
-			'core.page_header_after'					=> 'core_page_header_after',
-			'core.page_footer'							=> 'core_page_footer',
-			'core.viewforum_modify_topicrow'			=> 'core_viewforum_modify_topicrow',
-			'core.viewtopic_modify_page_title'			=> 'core_viewtopic_modify_page_title',
-			'core.viewtopic_modify_post_row'			=> 'core_viewtopic_modify_post_row',
-			'core.memberlist_view_profile'				=> 'core_memberlist_view_profile',
-			'core.modify_username_string'				=> 'core_modify_username_string',
-			'core.submit_post_end'						=> 'core_submit_post_end',
-			'core.posting_modify_template_vars'			=> 'core_posting_modify_template_vars',
-			'core.display_user_activity_modify_actives'	=> 'core_display_user_activity_modify_actives',
+			'core.common'										=> 'core_common',
+			'core.user_setup'									=> 'core_user_setup',
+			'core.append_sid'									=> 'core_append_sid',
+			'core.pagination_generate_page_link'				=> 'core_pagination_generate_page_link',
+			'core.page_header_after'							=> 'core_page_header_after',
+			'core.page_footer'									=> 'core_page_footer',
+			'core.viewforum_modify_topicrow'					=> 'core_viewforum_modify_topicrow',
+			'core.viewtopic_modify_page_title'					=> 'core_viewtopic_modify_page_title',
+			'core.viewtopic_modify_post_row'					=> 'core_viewtopic_modify_post_row',
+			'core.memberlist_view_profile'						=> 'core_memberlist_view_profile',
+			'core.modify_username_string'						=> 'core_modify_username_string',
+			'core.submit_post_end'								=> 'core_submit_post_end',
+			'core.posting_modify_template_vars'					=> 'core_posting_modify_template_vars',
+			'core.display_user_activity_modify_actives'			=> 'core_display_user_activity_modify_actives',
+			'core.display_forums_modify_template_vars'			=> 'core_display_forums_modify_template_vars',
+			'core.display_forums_modify_category_template_vars'	=> 'core_display_forums_modify_template_vars',
+			'core.viewforum_modify_page_title'					=> 'core_viewforum_modify_page_title',
+			'core.viewtopic_assign_template_vars_before'		=> 'core_viewtopic_assign_template_vars_before',
 		];
 	}
 
@@ -271,7 +275,7 @@ class listener implements EventSubscriberInterface
 				{
 					if (!empty($post_id))
 					{
-						$this->start = floor(($topic_data['prev_posts']) / $this->config['posts_per_page']) * $this->config['posts_per_page'];
+						$this->start = floor((int) $topic_data['prev_posts'] / $this->config['posts_per_page']) * $this->config['posts_per_page'];
 					}
 				}
 
@@ -574,21 +578,56 @@ class listener implements EventSubscriberInterface
 		]);
 	}
 
+	/**
+	 * This function is called for the forum lists
+	 */
+	public function core_display_forums_modify_template_vars($event)
+	{
+		$row = $event['row'];
+		$this->core->prepare_forum_url($row);
+
+		$varname = isset($event['cat_row']) ? 'cat_row' : 'forum_row';
+		$template_row = $event[$varname];
+		$template_row['U_VIEWFORUM'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $row['forum_id'], true, false, false, true);
+
+		if (!empty($row['forum_last_post_id']))
+		{
+			/*$last_post = [
+				'post_id' => $row['forum_last_post_id'],
+				'topic_url' => $row['topic_url'],
+			];*/
+			// TODO: probably need to get the topic info for this
+			//$this->core->prepare_topic_url($last_post, $row['forum_id']);
+		}
+
+		$event[$varname] = $template_row;
+	}
+
+	public function core_viewforum_modify_page_title($event)
+	{
+		$forum_data = $event['forum_data'];
+		$this->core->prepare_forum_url($forum_data);
+	}
+
 	public function core_viewforum_modify_topicrow($event)
 	{
-		// Unfortunately, we do not have direct access to $topic_forum_id here
-		global $topic_forum_id, $topic_id, $view_topic_url; // god save the hax
-
 		$row = $event['row'];
 		$topic_row = $event['topic_row'];
 
-		$this->core->prepare_topic_url($row, $topic_forum_id);
+		if (isset($topic_row['U_VIEW_TOPIC']))
+		{
+			$view_topic_url_params = 't=' . $row['topic_id'];
+			$topic_row['U_VIEW_TOPIC'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", $view_topic_url_params, true, false, false, true);
+			$topic_row['U_NEWEST_POST']	= $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", $view_topic_url_params . '&amp;view=unread#unread', true, false, false, true);
+			$topic_row['U_LAST_POST'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'], true, false, false, true);
+			$event['topic_row'] = $topic_row;
+		}
+	}
 
-		$view_topic_url_params = 'f=' . $topic_forum_id . '&amp;t=' . $topic_id;
-		$view_topic_url = $topic_row['U_VIEW_TOPIC'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", $view_topic_url_params, true, false, false, true);
-
-		$event['topic_row'] = $topic_row;
-		$event['row'] = $row;
+	public function core_viewtopic_assign_template_vars_before($event)
+	{
+		$row = $event['topic_data'];
+		$this->core->prepare_topic_url($row);
 	}
 
 	public function core_viewtopic_modify_post_row($event)
