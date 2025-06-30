@@ -48,10 +48,10 @@ class usu
 	protected \phpbb\language\language $language;
 
 	/** @var string */
-	protected string $tpl_name;
+	public string $tpl_name;
 
 	/** @var string */
-	protected string $page_title;
+	public string $page_title;
 
 	public $u_action;
 	public $new_config = [];
