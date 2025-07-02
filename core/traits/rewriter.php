@@ -1,26 +1,27 @@
 <?php
+
 /**
-*
-* @package Ultimate phpBB SEO Friendly URL
-* @version $$
-* @copyright (c) 2017 www.phpBB-SEO.ir
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
+ *
+ * @package Ultimate phpBB SEO Friendly URL
+ * @version $$
+ * @copyright (c) 2017 www.phpBB-SEO.ir
+ * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ *
+ */
 
 namespace phpbbseo\usu\core\traits;
 
 /**
-* rewriter trait
-* www.phpBB-SEO.ir
-* @package Ultimate phpBB SEO Friendly URL
-*/
+ * rewriter trait
+ * www.phpBB-SEO.ir
+ * @package Ultimate phpBB SEO Friendly URL
+ */
 trait rewriter
 {
 	/**
-	* URL rewritting for viewtopic.php
-	* With Virtual Folder Injection
-	*/
+	 * URL rewritting for viewtopic.php
+	 * With Virtual Folder Injection
+	 */
 	public function viewtopic()
 	{
 		$this->filter_url($this->stop_vars);
@@ -68,8 +69,8 @@ trait rewriter
 	}
 
 	/**
-	* URL rewritting for viewforum.php
-	*/
+	 * URL rewritting for viewforum.php
+	 */
 	public function viewforum()
 	{
 		$this->path = $this->seo_path['phpbb_urlR'];
@@ -103,9 +104,9 @@ trait rewriter
 	}
 
 	/**
-	* URL rewritting for memberlist.php
-	* with nicknames and group name injection
-	*/
+	 * URL rewritting for memberlist.php
+	 * with nicknames and group name injection
+	 */
 	public function memberlist()
 	{
 		$this->path = $this->seo_path['phpbb_urlR'];
@@ -144,8 +145,8 @@ trait rewriter
 	}
 
 	/**
-	* URL rewritting for search.php
-	*/
+	 * URL rewritting for search.php
+	 */
 	public function search()
 	{
 		if (isset($this->get_vars['fid']))
@@ -162,7 +163,7 @@ trait rewriter
 
 		if ($user_id && isset($this->seo_url['user'][$user_id]))
 		{
-			$sr = (@$this->get_vars['sr'] == 'topics' ) ? 'topics' : 'posts';
+			$sr = (@$this->get_vars['sr'] == 'topics') ? 'topics' : 'posts';
 
 			$paginate_method_name = $this->paginate_method['user'];
 
@@ -268,8 +269,8 @@ trait rewriter
 	}
 
 	/**
-	* URL rewritting for download/file.php
-	*/
+	 * URL rewritting for download/file.php
+	 */
 	public function phpbb_files()
 	{
 		$this->filter_url($this->stop_vars);
@@ -303,8 +304,8 @@ trait rewriter
 	}
 
 	/**
-	* URL rewritting for index.php
-	*/
+	 * URL rewritting for index.php
+	 */
 	public function index()
 	{
 		$this->path = $this->seo_path['phpbb_urlR'];
@@ -322,9 +323,9 @@ trait rewriter
 	}
 
 	/**
-	* rewrite pagination, simple
-	* -xx.html
-	*/
+	 * rewrite pagination, simple
+	 * -xx.html
+	 */
 	public function rewrite_pagination($suffix)
 	{
 		$this->start = $this->seo_start(@$this->get_vars['start']) . $suffix;
@@ -333,9 +334,9 @@ trait rewriter
 	}
 
 	/**
-	* rewrite pagination, virtual folder
-	* /pagexx.html
-	*/
+	 * rewrite pagination, virtual folder
+	 * /pagexx.html
+	 */
 	public function rewrite_pagination_page($suffix = '/')
 	{
 		$this->start = $this->seo_start_page(@$this->get_vars['start'], $suffix);

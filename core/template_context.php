@@ -138,7 +138,8 @@ class template_context extends \phpbb\template\context
 					case 'viewtopic.' . $this->php_ext:
 						$fragment = parse_url($split_url[0], PHP_URL_FRAGMENT) ?? '';
 						$fragment = !empty($fragment) ? "#{$fragment}" : '';
-						parse_str(str_replace($fragment, '', str_replace('&amp;', '&', $split_url[1] ?? '')), $url_params);
+						$url_params = [];
+						parse_str(str_replace($fragment, '', str_replace('&amp;', '&', isset($split_url[1]) ? $split_url[1] : '')), $url_params);
 						if (isset($url_params['p']))
 						{
 							$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", "p={$url_params['p']}") . $fragment;
@@ -155,6 +156,49 @@ class template_context extends \phpbb\template\context
 
 					default:
 						$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", isset($split_url[1]) ? $split_url[1] : false);
+				}
+			}
+		}
+		else if ($varname === 'LEGEND')
+		{
+			$pattern = '/href\s*=\s*(?:"
+                 ([^"]*)      # double-quoted
+               "|\'([^\']*)\'   # single-quoted
+               |([^>\s]+)     # unquoted
+               )/ix';
+
+			$matches = [];
+			preg_match_all($pattern, $varval, $matches);
+
+			$hrefs = array_filter(array_merge(
+				$matches[1],
+				$matches[2],
+				$matches[3]
+			));
+
+			foreach ($hrefs as $href)
+			{
+				$split_url = explode('?', $href, 2);
+				if (isset($split_url[1]))
+				{
+					$query_string = str_replace('&amp;', '&', $split_url[1]);
+					parse_str($query_string, $url_params);
+					$group_id = isset($url_params['g']) ? (int) $url_params['g'] : 0;
+					$user_id = isset($url_params['u']) ? (int) $url_params['u'] : 0;
+					if ($group_id > 0)
+					{
+						$url = "{$this->phpbb_root_path}memberlist.{$this->php_ext}";
+						$this->core->prepare_url('group', $url, $group_id);
+						$rewritten_url = $this->core->url_rewrite($url, $query_string, true, false, false, true);
+						$varval = str_replace($href, $rewritten_url, $varval);
+					}
+					else if ($user_id > 0)
+					{
+						$url = "{$this->phpbb_root_path}memberlist.{$this->php_ext}";
+						$this->core->prepare_url('user', $url, $user_id);
+						$rewritten_url = $this->core->url_rewrite($url, $query_string);
+						$varval = str_replace($href, $rewritten_url, $varval);
+					}
 				}
 			}
 		}

@@ -1,27 +1,28 @@
 <?php
+
 /**
-*
-* @package Ultimate phpBB SEO Friendly URL
-* @version $$
-* @copyright (c) 2017 www.phpBB-SEO.ir
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
+ *
+ * @package Ultimate phpBB SEO Friendly URL
+ * @version $$
+ * @copyright (c) 2017 www.phpBB-SEO.ir
+ * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ *
+ */
 
 namespace phpbbseo\usu\core\traits;
 
 /**
-* url trait
-* www.phpBB-SEO.ir
-* @package Ultimate phpBB SEO Friendly URL
-*/
+ * url trait
+ * www.phpBB-SEO.ir
+ * @package Ultimate phpBB SEO Friendly URL
+ */
 trait url
 {
 	// --> URL rewriting functions <--
 	/**
-	* format_url($url, $type = 'topic')
-	* Prepare Titles for URL injection
-	*/
+	 * format_url($url, $type = 'topic')
+	 * Prepare Titles for URL injection
+	 */
 	public function format_url($url, $type = 'topic')
 	{
 		$url = preg_replace('`\[.*\]`U', '', $url);
@@ -39,10 +40,10 @@ trait url
 	}
 
 	/**
-	* set_url($url, $id = 0, $type = 'forum', $parent = '')
-	* Prepare url first part and checks cache
-	*/
-	public function set_url($url, $id = 0, $type = 'forum', $parent = '')
+	 * set_url($url, $id = 0, $type = 'forum')
+	 * Prepare url first part and checks cache
+	 */
+	public function set_url($url, $id = 0, $type = 'forum')
 	{
 		if (empty($this->seo_url[$type][$id]))
 		{
@@ -53,9 +54,9 @@ trait url
 	}
 
 	/**
-	* set_parent_urls(array & $forum_data)
-	* set/check urls of current forum's parent(s)
-	*/
+	 * set_parent_urls(array & $forum_data)
+	 * set/check urls of current forum's parent(s)
+	 */
 	public function set_parent_urls(&$forum_data)
 	{
 		if (!empty($forum_data['forum_parents']))
@@ -72,18 +73,18 @@ trait url
 	}
 
 	/**
-	* prepare_url($type, $title, $id, $parent = '', $smpl = false)
-	* Prepare url first part
-	*/
-	public function prepare_url($type, $title, $id, $parent = '', $smpl = false)
+	 * prepare_url($type, $url, $id, $parent = '', $smpl = false)
+	 * Prepare url first part
+	 */
+	public function prepare_url($type, $url, $id, $parent = '', $smpl = false)
 	{
-		return empty($this->seo_url[$type][$id]) ? ($this->seo_url[$type][$id] = sprintf($this->sftpl[$type . ($smpl ? '_smpl' : '')], $parent, !$smpl ? $this->format_url($title, $this->seo_static[$type]) : '', $id)) : $this->seo_url[$type][$id];
+		return empty($this->seo_url[$type][$id]) ? ($this->seo_url[$type][$id] = sprintf($this->sftpl[$type . ($smpl ? '_smpl' : '')], $parent, !$smpl ? $this->format_url($url, $this->seo_static[$type]) : '', $id)) : $this->seo_url[$type][$id];
 	}
 
 	/**
-	* get_url_info($type, $url, $info = 'title')
-	* Get info from url (title, id, parent etc ...)
-	*/
+	 * get_url_info($type, $url, $info = 'title')
+	 * Get info from url (title, id, parent etc ...)
+	 */
 	public function get_url_info($type, $url, $info = 'title')
 	{
 		$url = trim($url, '/ ');
@@ -97,9 +98,9 @@ trait url
 	}
 
 	/**
-	* check_url($type, $url, $parent = '')
-	* Validate a prepared url
-	*/
+	 * check_url($type, $url, $parent = '')
+	 * Validate a prepared url
+	 */
 	public function check_url($type, $url, $parent = '')
 	{
 		if (empty($url))
@@ -113,9 +114,9 @@ trait url
 	}
 
 	/**
-	* prepare_topic_url(&$topic_data, $topic_forum_id)
-	* Prepare topic url with SQL based URL rewriting
-	*/
+	 * prepare_topic_url(&$topic_data, $topic_forum_id)
+	 * Prepare topic url with SQL based URL rewriting
+	 */
 	public function prepare_topic_url(&$topic_data, $topic_forum_id = 0)
 	{
 		$id = max(0, (int) $topic_data['topic_id']);
@@ -144,9 +145,9 @@ trait url
 	}
 
 	/**
-	* prepare_forum_url(&$forum_data, $parent = '')
-	* Prepare url first part and checks cache
-	*/
+	 * prepare_forum_url(&$forum_data, $parent = '')
+	 * Prepare url first part and checks cache
+	 */
 	public function prepare_forum_url(&$forum_data)
 	{
 		$id = max(0, (int) $forum_data['forum_id']);
@@ -160,9 +161,9 @@ trait url
 	}
 
 	/**
-	* prepare_iurl($data, $type, $parent = '')
-	* Prepare url first part (not for forums) with SQL based URL rewriting
-	*/
+	 * prepare_iurl($data, $type, $parent = '')
+	 * Prepare url first part (not for forums) with SQL based URL rewriting
+	 */
 	public function prepare_iurl(&$data, $type, $parent = '')
 	{
 		$id = max(0, (int) $data[$type . '_id']);
@@ -183,9 +184,9 @@ trait url
 	}
 
 	/**
-	* set_user_url($username, $user_id = 0)
-	* Prepare profile url
-	*/
+	 * set_user_url($username, $user_id = 0)
+	 * Prepare profile url
+	 */
 	public function set_user_url($username, $user_id = 0)
 	{
 		if (empty($this->seo_url['user'][$user_id]))
@@ -213,9 +214,9 @@ trait url
 	}
 
 	/**
-	* Returns true if the user can edit urls
-	* @access public
-	*/
+	 * Returns true if the user can edit urls
+	 * @access public
+	 */
 	public function url_can_edit($forum_id = 0)
 	{
 		if (empty($this->seo_opt['sql_rewrite']) || empty($this->user->data['is_registered']))
@@ -247,9 +248,9 @@ trait url
 	}
 
 	/**
-	* Will break if a $filter pattern is foundin $url.
-	* Example $filter = array("view=", "mark=");
-	*/
+	 * Will break if a $filter pattern is foundin $url.
+	 * Example $filter = array("view=", "mark=");
+	 */
 	public function filter_url($filter = [])
 	{
 		foreach ($filter as $patern)
@@ -267,9 +268,9 @@ trait url
 	}
 
 	/**
-	* expected_url($path = '')
-	* build expected url
-	*/
+	 * expected_url($path = '')
+	 * build expected url
+	 */
 	public function expected_url($path = '')
 	{
 		$path = empty($path) ? $this->phpbb_root_path : $path;
@@ -294,12 +295,12 @@ trait url
 	}
 
 	/**
-	* url_rewrite($url, $params = false, $is_amp = true, $session_id = false)
-	* builds and Rewrite URLs.
-	* Allow adding of many more cases than just the
-	* regular phpBB URL rewritting without slowing down the process.
-	* Mimics append_sid with some shortcuts related to how url are rewritten
-	*/
+	 * url_rewrite($url, $params = false, $is_amp = true, $session_id = false)
+	 * builds and Rewrite URLs.
+	 * Allow adding of many more cases than just the
+	 * regular phpBB URL rewritting without slowing down the process.
+	 * Mimics append_sid with some shortcuts related to how url are rewritten
+	 */
 	public function url_rewrite($url, $params = false, $is_amp = true, $session_id = false, $is_route = false, $recache = false)
 	{
 		global $_SID, $_EXTRA_URL;
@@ -426,7 +427,8 @@ trait url
 			}
 		}
 
-		$data_sanitizer = function (&$value, $key) {
+		$data_sanitizer = function (&$value, $key)
+		{
 			$type_cast_helper = new \phpbb\request\type_cast_helper();
 			$type_cast_helper->set_var($value, $value, gettype($value), true);
 		};
