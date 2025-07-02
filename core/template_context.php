@@ -127,7 +127,8 @@ class template_context extends \phpbb\template\context
 					case 'viewforum.' . $this->php_ext:
 					case 'viewtopic.' . $this->php_ext:
 						$fragment = parse_url($split_url[0], PHP_URL_FRAGMENT) ?? '';
-						parse_str(str_replace("#{$fragment}", '', str_replace('&amp;', '&', $split_url[1] ?? '')), $url_params);
+						$fragment = !empty($fragment) ? "#{$fragment}" : '';
+						parse_str(str_replace($fragment, '', str_replace('&amp;', '&', $split_url[1] ?? '')), $url_params);
 						if (isset($url_params['p']))
 						{
 							$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", "p={$url_params['p']}") . $fragment;
