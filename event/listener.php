@@ -1,18 +1,20 @@
 <?php
+
 /**
-*
-* @package Ultimate phpBB SEO Friendly URL
-* @version $$
-* @copyright (c) 2017 www.phpBB-SEO.ir
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
+ *
+ * @package Ultimate phpBB SEO Friendly URL
+ * @version $$
+ * @copyright (c) 2017 www.phpBB-SEO.ir
+ * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ *
+ */
 
 namespace phpbbseo\usu\event;
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
+
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use phpbbseo\usu\core\core;
 use phpbb\config\config;
@@ -24,8 +26,8 @@ use phpbb\db\driver\driver_interface as db_driver;
 use phpbb\language\language;
 
 /**
-* Event listener
-*/
+ * Event listener
+ */
 class listener implements EventSubscriberInterface
 {
 	/** @var core */
@@ -53,15 +55,15 @@ class listener implements EventSubscriberInterface
 	private $language;
 
 	/**
-	* Current $phpbb_root_path
-	* @var string
-	*/
+	 * Current $phpbb_root_path
+	 * @var string
+	 */
 	private $phpbb_root_path;
 
 	/**
-	* Current $php_ext
-	* @var string
-	*/
+	 * Current $php_ext
+	 * @var string
+	 */
 	private $php_ext;
 
 	private $forum_id = 0;
@@ -75,20 +77,20 @@ class listener implements EventSubscriberInterface
 	private $hilit_words = '';
 
 	/**
-	* Constructor
-	*
-	* @param core			$core
-	* @param config			$config				Config object
-	* @param auth			$auth				Auth object
-	* @param template		$template			Template object
-	* @param user			$user				User object
-	* @param request		$request			Request object
-	* @param db_driver		$db					Database object
-	* @param language		$language			Language object
-	* @param string			$phpbb_root_path	Path to the phpBB root
-	* @param string			$php_ext			PHP file extension
-	*
-	*/
+	 * Constructor
+	 *
+	 * @param core			$core
+	 * @param config			$config				Config object
+	 * @param auth			$auth				Auth object
+	 * @param template		$template			Template object
+	 * @param user			$user				User object
+	 * @param request		$request			Request object
+	 * @param db_driver		$db					Database object
+	 * @param language		$language			Language object
+	 * @param string			$phpbb_root_path	Path to the phpBB root
+	 * @param string			$php_ext			PHP file extension
+	 *
+	 */
 	public function __construct(core $core, config $config, auth $auth, template $template, user $user, request $request, db_driver $db, language $language, $phpbb_root_path, $php_ext)
 	{
 		$this->core = $core;
@@ -123,7 +125,7 @@ class listener implements EventSubscriberInterface
 			'core.display_forums_modify_template_vars'			=> 'core_display_forums_modify_template_vars',
 			'core.display_forums_modify_category_template_vars'	=> 'core_display_forums_modify_template_vars',
 			'core.viewforum_modify_page_title'					=> 'core_viewforum_modify_page_title',
-			'core.viewtopic_assign_template_vars_before'		=> 'core_viewtopic_assign_template_vars_before',
+			'core.viewtopic_modify_forum_id'					=> 'core_viewtopic_modify_forum_id',
 		];
 	}
 
@@ -170,7 +172,7 @@ class listener implements EventSubscriberInterface
 					$sort_days = $this->request->variable('st', $default_sort_days);
 					$sort_key = $this->request->variable('sk', $default_sort_key);
 					$sort_dir = $this->request->variable('sd', $default_sort_dir);
-					$keep_mark = in_array($mark_read, ['topics', 'topic', 'forums', 'all']) ? (boolean) ($user_data['is_registered'] || $this->config['load_anon_lastread']) : false;
+					$keep_mark = in_array($mark_read, ['topics', 'topic', 'forums', 'all']) ? (bool) ($user_data['is_registered'] || $this->config['load_anon_lastread']) : false;
 
 					$this->core->seo_opt['zero_dupe']['redir_def'] = [
 						'hash'		=> ['val' => $this->request->variable('hash', ''), 'keep' => $keep_mark],
@@ -324,26 +326,26 @@ class listener implements EventSubscriberInterface
 						$seo_watch = $this->request->variable('watch', '');
 						$seo_unwatch = $this->request->variable('unwatch', '');
 						$seo_bookmark = $this->request->variable('bookmark', 0);
-						$keep_watch = (boolean) ($seo_watch == 'topic' && $user_data['is_registered']);
-						$keep_unwatch = (boolean) ($seo_unwatch == 'topic' && $user_data['is_registered']);
-						$keep_hash = (boolean) ($keep_watch || $keep_unwatch || $seo_bookmark);
+						$keep_watch = (bool) ($seo_watch == 'topic' && $user_data['is_registered']);
+						$keep_unwatch = (bool) ($seo_unwatch == 'topic' && $user_data['is_registered']);
+						$keep_hash = (bool) ($keep_watch || $keep_unwatch || $seo_bookmark);
 						$seo_uid = max(0, $this->request->variable('uid', 0));
 
 						$this->core->seo_opt['zero_dupe']['redir_def'] = [
-							'uid'		=> ['val' => $seo_uid, 'keep' => (boolean) ($keep_hash && $seo_uid)],
+							'uid'		=> ['val' => $seo_uid, 'keep' => (bool) ($keep_hash && $seo_uid)],
 							'f'		=> ['val' => $forum_id, 'keep' => true, 'force' => true],
 							't'		=> ['val' => $topic_id, 'keep' => true, 'force' => true, 'hash' => $post_id ? "p{$post_id}" : ''],
-							'p'		=> ['val' => $post_id, 'keep' =>  ($post_id && $view == 'show' ? true : false), 'hash' => "p{$post_id}"],
+							'p'		=> ['val' => $post_id, 'keep' => ($post_id && $view == 'show' ? true : false), 'hash' => "p{$post_id}"],
 							'watch'		=> ['val' => $seo_watch, 'keep' => $keep_watch],
 							'unwatch'	=> ['val' => $seo_unwatch, 'keep' => $keep_unwatch],
-							'bookmark'	=> ['val' => $seo_bookmark, 'keep' => (boolean) ($user_data['is_registered'] && $this->config['allow_bookmarks'] && $seo_bookmark)],
+							'bookmark'	=> ['val' => $seo_bookmark, 'keep' => (bool) ($user_data['is_registered'] && $this->config['allow_bookmarks'] && $seo_bookmark)],
 							'start'		=> ['val' => $this->start, 'keep' => true, 'force' => true],
 							'hash'		=> ['val' => $this->request->variable('hash', ''), 'keep' => $keep_hash],
 							'st'		=> ['val' => $sort_days, 'keep' => true],
 							'sk'		=> ['val' => $sort_key, 'keep' => true],
 							'sd'		=> ['val' => $sort_dir, 'keep' => true],
-							'view'		=> ['val' => $view, 'keep' => $view == 'print' ? (boolean) $this->auth->acl_get('f_print', $forum_id) : (($view == 'viewpoll' || $view == 'show') ? true : false)],
-							'hilit'		=> ['val' => (($highlight_match) ? $highlight : ''), 'keep' => (boolean) !(!$user_data['is_registered'] && $this->core->seo_opt['rem_hilit'])],
+							'view'		=> ['val' => $view, 'keep' => $view == 'print' ? (bool) $this->auth->acl_get('f_print', $forum_id) : (($view == 'viewpoll' || $view == 'show') ? true : false)],
+							'hilit'		=> ['val' => (($highlight_match) ? $highlight : ''), 'keep' => (bool) !(!$user_data['is_registered'] && $this->core->seo_opt['rem_hilit'])],
 						];
 
 						if ($this->core->seo_opt['zero_dupe']['redir_def']['bookmark']['keep'])
@@ -448,7 +450,6 @@ class listener implements EventSubscriberInterface
 							$response = $http_kernel->handle($symfony_request);
 							$response->send();
 							$http_kernel->terminate($symfony_request, $response);
-
 						}
 
 						if ($this->core->seo_opt['redirect_404_forum'])
@@ -545,11 +546,11 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	* Note : This mod is going to help your site a lot in Search Engines
-	* If You really cannot put this link, you should at least provide us with one visible
-	* (can be small but visible) link on your home page or your forum Index using this code for example :
-	* <a href="http://www.phpBB-SEO.ir/" title="Search Engine Optimization By phpBB SEO">phpBB SEO</a>
-	*/
+	 * Note : This mod is going to help your site a lot in Search Engines
+	 * If You really cannot put this link, you should at least provide us with one visible
+	 * (can be small but visible) link on your home page or your forum Index using this code for example :
+	 * <a href="http://www.phpBB-SEO.ir/" title="Search Engine Optimization By phpBB SEO">phpBB SEO</a>
+	 */
 	public function core_page_footer($event)
 	{
 		if (empty($this->core->seo_opt['copyrights']['title']))
@@ -616,7 +617,10 @@ class listener implements EventSubscriberInterface
 
 		if (isset($topic_row['U_VIEW_TOPIC']))
 		{
-			$view_topic_url_params = 't=' . $row['topic_id'];
+			$forum_id = $row['forum_id'];
+			$this->core->prepare_topic_url($row, $forum_id);
+
+			$view_topic_url_params = "t={$row['topic_id']}";
 			$topic_row['U_VIEW_TOPIC'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", $view_topic_url_params, true, false, false, true);
 			$topic_row['U_NEWEST_POST']	= $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", $view_topic_url_params . '&amp;view=unread#unread', true, false, false, true);
 			$topic_row['U_LAST_POST'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'], true, false, false, true);
@@ -624,10 +628,25 @@ class listener implements EventSubscriberInterface
 		}
 	}
 
-	public function core_viewtopic_assign_template_vars_before($event)
+	public function core_viewtopic_modify_forum_id($event)
 	{
 		$row = $event['topic_data'];
-		$this->core->prepare_topic_url($row);
+		$forum_id = $event['forum_id'];
+		$topic_url = $this->core->prepare_topic_url($row, $forum_id);
+		$request_uri = $this->request->server('REQUEST_URI');
+		if (strstr($request_uri, $topic_url) === false)
+		{
+			// We need to redirect to the correct URL
+			$query_params = parse_url($request_uri, PHP_URL_QUERY) ?? '';
+			$query_params = (strstr($query_params, 't=') === false ? "t={$row['topic_id']}" . (!empty($query_params) ? "&amp;" : '') : '') . $query_params;
+			$redirect_url = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", $query_params, true, false, false, true);
+			if (strstr($redirect_url, $topic_url) !== false)
+			{
+				return $this->core->seo_redirect($redirect_url);
+			}
+		}
+		$viewtopic_url = $event['viewtopic_url'];
+		$event['viewtopic_url'] = $this->core->url_rewrite($viewtopic_url, false, true, false, false, true);
 	}
 
 	public function core_viewtopic_modify_post_row($event)
@@ -635,6 +654,8 @@ class listener implements EventSubscriberInterface
 		$post_row = $event['post_row'];
 		$row = $event['row'];
 
+		$post_row['U_MINI_POST'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", "p={$row['post_id']}", true, false, false, true) . "#p{$row['post_id']}";
+		$post_row['U_MINI_POST_VIEW'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", "p={$row['post_id']}&amp;view=show", true, false, false, true) . "#p{$row['post_id']}";
 		$post_row['U_APPROVE_ACTION'] = append_sid("{$this->phpbb_root_path}mcp.$this->php_ext", "i=queue&amp;p={$row['post_id']}&amp;f={$this->forum_id}&amp;redirect=" . urlencode(str_replace('&amp;', '&', append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", "f={$this->forum_id}&amp;t={$this->topic_id}&amp;p=" . $row['post_id']) . '#p' . $row['post_id'])));
 		$post_row['L_POST_DISPLAY'] = ($row['hide_post']) ? $this->language->lang('POST_DISPLAY', '<a class="display_post" data-post-id="' . $row['post_id'] . '" href="' . append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", "f={$this->forum_id}&amp;t={$this->topic_id}&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}") . '">', '</a>') : '';
 		$event['post_row'] = $post_row;
@@ -699,22 +720,31 @@ class listener implements EventSubscriberInterface
 
 		if ($custom_profile_url !== false)
 		{
-			$profile_url = reapply_sid($custom_profile_url . (strpos($custom_profile_url, '?') !== false ?  '&amp;' : '?' ) . 'u=' . (int) $user_id);
+			$profile_url = reapply_sid($custom_profile_url . (strpos($custom_profile_url, '?') !== false ?  '&amp;' : '?') . 'u=' . (int) $user_id);
 		}
 		else
 		{
 			$profile_url = append_sid("{$this->phpbb_root_path}memberlist.{$this->php_ext}", 'mode=viewprofile&amp;u=' . (int) $user_id);
 		}
 
-		// Return profile
-		if ($mode == 'profile')
+		$profile_url_ary = explode(strstr($profile_url, '?') !== false ?  '?' : '&amp;', $profile_url, 2);
+		if (strstr($profile_url_ary[0], "memberlist.{$this->php_ext}") !== false && isset($profile_url_ary[1]))
 		{
-			$event['username_string'] = $profile_url;
-
-			return;
+			$profile_url = $this->core->url_rewrite("{$this->phpbb_root_path}memberlist.{$this->php_ext}", $profile_url_ary[1], true, false, false, true);
 		}
 
-		$event['username_string'] = str_replace(['{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'], [$profile_url, $event['username_colour'], $event['username']], (!$event['username_colour']) ? $event['_profile_cache']['tpl_profile'] : $event['_profile_cache']['tpl_profile_colour']);
+		// Return profile
+		$username_string = $event['username_string'];
+		if ($mode == 'profile')
+		{
+			$username_string = $profile_url;
+		}
+		else
+		{
+			$username_string = str_replace(['{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'], [$profile_url, $event['username_colour'], $event['username']], (!$event['username_colour']) ? $event['_profile_cache']['tpl_profile'] : $event['_profile_cache']['tpl_profile_colour']);
+		}
+
+		$event['username_string'] = $username_string;
 	}
 
 	/*
@@ -834,8 +864,8 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 			$this->core->set_url($data['forum_name'], $forum_id, 'forum');
 
 			$_parent = $post_data['topic_type'] == POST_GLOBAL ? $this->core->seo_static['global_announce'] : $this->core->seo_url['forum'][$forum_id];
-			$_t = !empty($data['topic_id']) ? max(0, (int) $data['topic_id'] ) : 0;
-			$_url = $this->core->url_can_edit($forum_id) ? utf8_normalize_nfc($this->request->variable('url', '', true)) : (isset($post_data['topic_url']) ? $post_data['topic_url'] : '' );
+			$_t = !empty($data['topic_id']) ? max(0, (int) $data['topic_id']) : 0;
+			$_url = $this->core->url_can_edit($forum_id) ? utf8_normalize_nfc($this->request->variable('url', '', true)) : (isset($post_data['topic_url']) ? $post_data['topic_url'] : '');
 
 			if (!$this->core->check_url('topic', $_url, $_parent))
 			{
@@ -853,7 +883,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 
 				unset($this->core->seo_url['topic'][$_t]);
 
-				$_url = $this->core->get_url_info('topic', $this->core->prepare_url('topic', $_title, $_t, $_parent, (( empty($_title) || ($_title == $this->core->seo_static['topic'])) ? true : false)), 'url');
+				$_url = $this->core->get_url_info('topic', $this->core->prepare_url('topic', $_title, $_t, $_parent, ((empty($_title) || ($_title == $this->core->seo_static['topic'])) ? true : false)), 'url');
 
 				unset($this->core->seo_url['topic'][$_t]);
 			}
@@ -898,7 +928,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 				case 'edit_last_post':
 				case 'edit_topic':
 					$post_visibility = ITEM_REAPPROVE;
-				break;
+					break;
 			}
 		}
 
@@ -938,7 +968,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		}
 
 		$url = (!$params) ? "{$this->phpbb_root_path}viewforum.{$this->php_ext}" : "{$this->phpbb_root_path}viewtopic.{$this->php_ext}";
-		$url = $this->core->url_rewrite($url, 'f=' . $data['forum_id'] . $params, true, false, false, true) . $add_anchor;
+		$url = $this->core->url_rewrite($url, 'f=' . $data['forum_id'] . $params, true, false, false, isset($params)) . $add_anchor;
 
 		$event['url'] = $url;
 		$event['data'] = $data;
@@ -962,7 +992,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 				$this->core->set_url($post_data['forum_name'], $forum_id, 'forum');
 
 				$_parent = $post_data['topic_type'] == POST_GLOBAL ? $this->core->seo_static['global_announce'] : $this->core->seo_url['forum'][$forum_id];
-				$_t = !empty($post_data['topic_id']) ? max(0, (int) $post_data['topic_id'] ) : 0;
+				$_t = !empty($post_data['topic_id']) ? max(0, (int) $post_data['topic_id']) : 0;
 				$_url = $this->core->url_can_edit($forum_id) ? utf8_normalize_nfc($this->request->variable('url', '', true)) : (isset($post_data['topic_url']) ? $post_data['topic_url'] : '');
 
 				if (!$this->core->check_url('topic', $_url, $_parent))

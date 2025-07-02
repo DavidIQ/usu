@@ -38,3 +38,4 @@ services:
         arguments:
             - '@phpbbseo.usu.core'
             - '%core.php_ext%'
+            - '%core.root_path%'
