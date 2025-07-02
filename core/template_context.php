@@ -140,17 +140,18 @@ class template_context extends \phpbb\template\context
 						$fragment = !empty($fragment) ? "#{$fragment}" : '';
 						$url_params = [];
 						parse_str(str_replace($fragment, '', str_replace('&amp;', '&', isset($split_url[1]) ? $split_url[1] : '')), $url_params);
+						$start = isset($url_params['start']) ? "&amp;start={$url_params['start']}" : '';
 						if (isset($url_params['p']))
 						{
 							$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", "p={$url_params['p']}") . $fragment;
 						}
 						else if (isset($url_params['t']))
 						{
-							$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", "t={$url_params['t']}") . $fragment;
+							$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", "t={$url_params['t']}{$start}") . $fragment;
 						}
 						else if (isset($url_params['f']))
 						{
-							$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", "f={$url_params['f']}") . $fragment;
+							$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", "f={$url_params['f']}{$start}") . $fragment;
 						}
 						break;
 
