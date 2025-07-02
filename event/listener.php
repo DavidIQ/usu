@@ -634,12 +634,15 @@ class listener implements EventSubscriberInterface
 		$forum_id = $event['forum_id'];
 		$topic_url = $this->core->prepare_topic_url($row, $forum_id);
 		$request_uri = $this->request->server('REQUEST_URI');
-		if (strstr($request_uri, $topic_url) === false)
+		$post_id = $this->request->variable('p', 0);
+		if (!$post_id && strstr($request_uri, $topic_url) === false)
 		{
 			// We need to redirect to the correct URL
-			$query_params = parse_url($request_uri, PHP_URL_QUERY) ?? '';
-			$query_params = (strstr($query_params, 't=') === false ? "t={$row['topic_id']}" . (!empty($query_params) ? "&amp;" : '') : '') . $query_params;
-			$redirect_url = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", $query_params, true, false, false, true);
+			$url_query = parse_url(str_replace('&amp;', '&', $request_uri), PHP_URL_QUERY) ?? '';
+			$query_params = [];
+			parse_str($url_query, $query_params);
+			$topic_query_params = (!isset($query_params['t']) ? "t={$row['topic_id']}" . (!empty($url_query) ? "&amp;" : '') : '') . $url_query;
+			$redirect_url = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", $topic_query_params, true, false, false, true);
 			if (strstr($redirect_url, $topic_url) !== false)
 			{
 				return $this->core->seo_redirect($redirect_url);
