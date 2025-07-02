@@ -15,19 +15,23 @@ class template_context extends \phpbb\template\context
 	/** @var string */
 	private $phpbb_root_path;
 
+	/** @var string */
+	private $phpbb_adm_relative_path;
+
 	/**
 	 * Constructor
 	 *
 	 * @param core			$core
 	 *
 	 */
-	public function __construct(core $core, $php_ext, $phpbb_root_path)
+	public function __construct(core $core, $php_ext, $phpbb_root_path, $phpbb_adm_relative_path)
 	{
 		parent::__construct();
 
 		$this->core = $core;
 		$this->php_ext = $php_ext;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_adm_relative_path = $phpbb_adm_relative_path;
 	}
 
 	/**
@@ -116,7 +120,13 @@ class template_context extends \phpbb\template\context
 	 */
 	private function var_value_replace($varname, &$varval)
 	{
-		if (strstr($varname, 'U_') !== false || strstr($varname, '_LINK') !== false || strstr($varname, '_URL') !== false)
+		if (is_string($varval) && strstr($varval, $this->phpbb_adm_relative_path) !== false)
+		{
+			// Don't rewrite admin URLs
+			return;
+		}
+
+		if (str_starts_with($varname, 'U_') || str_ends_with($varname, '_LINK') || str_ends_with($varname, '_URL'))
 		{
 			$split_url = explode('?', $varval, 2);
 			$file_path = [];
