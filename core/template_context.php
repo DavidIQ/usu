@@ -15,23 +15,19 @@ class template_context extends \phpbb\template\context
 	/** @var string */
 	private $phpbb_root_path;
 
-	/** @var string */
-	private $phpbb_adm_relative_path;
-
 	/**
 	 * Constructor
 	 *
 	 * @param core			$core
 	 *
 	 */
-	public function __construct(core $core, $php_ext, $phpbb_root_path, $phpbb_adm_relative_path)
+	public function __construct(core $core, $php_ext, $phpbb_root_path)
 	{
 		parent::__construct();
 
 		$this->core = $core;
 		$this->php_ext = $php_ext;
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpbb_adm_relative_path = $phpbb_adm_relative_path;
 	}
 
 	/**
@@ -120,12 +116,6 @@ class template_context extends \phpbb\template\context
 	 */
 	private function var_value_replace($varname, &$varval)
 	{
-		if (is_string($varval) && strstr($varval, $this->phpbb_adm_relative_path) !== false)
-		{
-			// Don't rewrite admin URLs
-			return;
-		}
-
 		if (str_starts_with($varname, 'U_') || str_ends_with($varname, '_LINK') || str_ends_with($varname, '_URL'))
 		{
 			$split_url = explode('?', $varval, 2);
@@ -156,7 +146,14 @@ class template_context extends \phpbb\template\context
 						break;
 
 					default:
-						$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", isset($split_url[1]) ? $split_url[1] : false);
+						// need to skip any subdirectories in the URL not just admin
+						$board_url = generate_board_url();
+						$basic_url = str_replace([$this->phpbb_root_path, $board_url], '', $split_url[0]);
+						$basic_url = str_starts_with($basic_url, '/') ? substr($basic_url, 1) : $basic_url;
+						if (substr_count($basic_url, '/') === 0)
+						{
+							$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", isset($split_url[1]) ? $split_url[1] : false);
+						}
 				}
 			}
 		}

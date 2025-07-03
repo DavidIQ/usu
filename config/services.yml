@@ -39,4 +39,3 @@ services:
             - '@phpbbseo.usu.core'
             - '%core.php_ext%'
             - '%core.root_path%'
-            - '%core.adm_relative_path%'
