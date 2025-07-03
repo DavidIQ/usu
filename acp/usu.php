@@ -1,20 +1,21 @@
 <?php
+
 /**
-*
-* @package Ultimate phpBB SEO Friendly URL
-* @version $$
-* @copyright (c) 2017 www.phpBB-SEO.ir
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
+ *
+ * @package Ultimate phpBB SEO Friendly URL
+ * @version $$
+ * @copyright (c) 2017 www.phpBB-SEO.ir
+ * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ *
+ */
 
 namespace phpbbseo\usu\acp;
 
 /**
-* phpBB_SEO Class
-* www.phpBB-SEO.ir
-* @package Ultimate phpBB SEO Friendly URL
-*/
+ * phpBB_SEO Class
+ * www.phpBB-SEO.ir
+ * @package Ultimate phpBB SEO Friendly URL
+ */
 class usu
 {
 	/** @var \phpbb\config\config */
@@ -152,7 +153,6 @@ class usu
 
 				$display_vars['vars'] = [];
 				$display_vars['title'] = 'ACP_PHPBB_SEO_CLASS';
-				$display_vars['ACP_PHPBB_SEO_CLASS_EXPLAIN'] = $this->language->lang('ACP_PHPBB_SEO_CLASS_EXPLAIN', $this->modrtype_lang['ulink'], $this->modrtype_lang['uforumlink'], '</p><hr/><p><b>' . $this->language->lang('ACP_PHPBB_SEO_MODE') . ' : ' . $this->modrtype_lang['link'] . ' - ( ' . $this->modrtype_lang['forumlink'] . ' )</b></p><hr/><p>');
 
 				$i = 2;
 				$display_vars['vars']['legend1'] = 'ACP_PHPBB_SEO_CLASS';
@@ -287,7 +287,7 @@ class usu
 							}
 							else
 							{
-								$this->new_config['forum_url' . $forum_id] = $forum_url_title . (@$this->core->cache_config['settings']['rem_ids'] ? '': $this->core->seo_delim['forum'] . $forum_id);
+								$this->new_config['forum_url' . $forum_id] = $forum_url_title . (@$this->core->cache_config['settings']['rem_ids'] ? '' : $this->core->seo_delim['forum'] . $forum_id);
 							}
 						}
 						else
@@ -497,7 +497,7 @@ class usu
 						$forum_id = (int) $row['forum_id'];
 						$topic_id = (int) $row['topic_id'];
 						$_parent = $row['topic_type'] == POST_GLOBAL ? $this->core->seo_static['global_announce'] : $this->core->seo_url['forum'][$forum_id];
-						if ( !$this->core->check_url('topic', $row['topic_url'], $_parent))
+						if (!$this->core->check_url('topic', $row['topic_url'], $_parent))
 						{
 							if (!empty($row['topic_url']))
 							{
@@ -511,7 +511,7 @@ class usu
 								$_title = $this->core->modrtype > 2 ? censor_text($row['topic_title']) : '';
 							}
 							unset($this->core->seo_url['topic'][$topic_id]);
-							$row['topic_url'] = $this->core->get_url_info('topic', $this->core->prepare_url( 'topic', $_title, $topic_id, $_parent, (( empty($_title) || ($_title == $this->core->seo_static['topic']) ) ? true : false) ), 'url');
+							$row['topic_url'] = $this->core->get_url_info('topic', $this->core->prepare_url('topic', $_title, $topic_id, $_parent, ((empty($_title) || ($_title == $this->core->seo_static['topic'])) ? true : false)), 'url');
 							unset($this->core->seo_url['topic'][$topic_id]);
 							if ($row['topic_url'])
 							{
@@ -532,12 +532,12 @@ class usu
 					{
 						$endtime = microtime(true);
 						$duration = $endtime - $starttime;
-						$speed = round($limit/$duration, 2);
+						$speed = round($limit / $duration, 2);
 						$percent = round((($start + $limit) / $cnt['topic_cnt']) * 100, 2);
-						$message = $language->lang('SYNC_PROCESSING', $percent, ($start + $limit), $cnt['topic_cnt'], $limit, $speed, round($duration, 2) , round((($cnt['topic_cnt'] - $start)/$speed)/60, 2));
+						$message = $language->lang('SYNC_PROCESSING', $percent, ($start + $limit), $cnt['topic_cnt'], $limit, $speed, round($duration, 2), round((($cnt['topic_cnt'] - $start) / $speed) / 60, 2));
 						if ($url_updated)
 						{
-							$message.= $language->lang('SYNC_ITEM_UPDATED', '<br/>' . $url_updated);
+							$message .= $language->lang('SYNC_ITEM_UPDATED', '<br/>' . $url_updated);
 						}
 						$new_limit = ($duration < 10) ? $limit + 50 : $limit - 10;
 						meta_refresh(1, append_sid($redirect_url, 'go=1&amp;start=' . ($start + $limit) . "&amp;limit=$new_limit&amp;sync=sync"));
@@ -568,7 +568,7 @@ class usu
 				break;
 			default:
 				trigger_error('NO_MODE', E_USER_ERROR);
-			break;
+				break;
 		}
 
 		$error = [];
@@ -693,7 +693,7 @@ class usu
 								// and if not already set
 								if (!array_search($config_value, $this->core->cache_config['forum_urls']))
 								{
-									$this->core->cache_config['forum_urls'][$forum_id] = $config_value . (@$this->core->cache_config['settings']['rem_ids'] ? '': $this->core->seo_delim['forum'] . $forum_id);
+									$this->core->cache_config['forum_urls'][$forum_id] = $config_value . (@$this->core->cache_config['settings']['rem_ids'] ? '' : $this->core->seo_delim['forum'] . $forum_id);
 								}
 								else
 								{
@@ -797,8 +797,8 @@ class usu
 				$file = $this->core->cache_config['file'];
 				ksort($this->core->cache_config['forum_urls']);
 
-				$update = '<'.'?php' . "\n" . '/**' . "\n" . '* phpBB SEO' . "\n" . '* www.phpBB-SEO.ir' . "\n" . '* @package phpBB SEO USU' . "\n" . '*/' . "\n" . 'if (!defined(\'IN_PHPBB\')) {' . "\n\t" . 'exit;' . "\n" . '}' . "\n";
-				$update .= '$settings = ' . preg_replace('`[\s]+`', ' ', var_export($this->core->cache_config['settings'], true)) . ';'. "\n";
+				$update = '<' . '?php' . "\n" . '/**' . "\n" . '* phpBB SEO' . "\n" . '* www.phpBB-SEO.ir' . "\n" . '* @package phpBB SEO USU' . "\n" . '*/' . "\n" . 'if (!defined(\'IN_PHPBB\')) {' . "\n\t" . 'exit;' . "\n" . '}' . "\n";
+				$update .= '$settings = ' . preg_replace('`[\s]+`', ' ', var_export($this->core->cache_config['settings'], true)) . ';' . "\n";
 				$update .= '$forum_urls = ' . preg_replace('`[\s]+`', ' ', var_export($this->core->cache_config['forum_urls'], true)) . ';';
 
 				if ($this->write_cache($file, $update))
@@ -892,16 +892,16 @@ class usu
 	}
 
 	/**
-	*  forum_url_check validation
-	*/
+	 *  forum_url_check validation
+	 */
 	function forum_url_input($value, $key)
 	{
 		return '<input id="' . $key . '" type="text" size="40" maxlength="255" name="config[' . $key . ']" value="' . $value . '" /> ';
 	}
 
 	/**
-	*  select_string custom select string
-	*/
+	 *  select_string custom select string
+	 */
 	function select_string($value, $key)
 	{
 		$select_ary = $this->dyn_select[$key];
@@ -927,8 +927,8 @@ class usu
 	}
 
 	/**
-	*  seo_advices Always needed :-)
-	*/
+	 *  seo_advices Always needed :-)
+	 */
 	function seo_advices($url, $forum_id, $cached = false, $error_cust = '')
 	{
 		$seo_advice = '';
@@ -972,8 +972,8 @@ class usu
 	}
 
 	/**
-	*  seo_server_conf The evil one ;-)
-	*/
+	 *  seo_server_conf The evil one ;-)
+	 */
 	function seo_server_conf($html = true)
 	{
 		// get mods server_conf tpls
@@ -1011,9 +1011,9 @@ class usu
 		$spritf_tpl = [
 			'paginpage'	=> '/?(<b style="color:' . $colors['static'] . '">%1$s</b>([0-9]+)<b style="color:' . $colors['ext'] . '">%2$s</b>)?',
 			'pagin'		=> '(<b style="color:' . $colors['delim'] . '">%1$s</b>([0-9]+))?<b style="color:' . $colors['ext'] . '">%2$s</b>',
-			'static'	=> sprintf($colors['color'] , $colors['static'], '%1$s'),
-			'ext'		=> sprintf($colors['color'] , $colors['ext'], '%1$s'),
-			'delim'		=> sprintf($colors['color'] , $colors['delim'], '%1$s'),
+			'static'	=> sprintf($colors['color'], $colors['static'], '%1$s'),
+			'ext'		=> sprintf($colors['color'], $colors['ext'], '%1$s'),
+			'delim'		=> sprintf($colors['color'], $colors['delim'], '%1$s'),
 		];
 
 		$modrtype = [
@@ -1053,7 +1053,7 @@ class usu
 			$seo_ext[$type] = $_value ? str_replace('.', '\\.', $value) : '/';
 			$rewrite_tpl_vars['{' . strtoupper($type) . '_PAGINATION}'] = $_value ? sprintf($spritf_tpl['pagin'], $this->core->seo_delim['start'], $seo_ext[$type]) : $reg_ex_page;
 			// use url/? to allow both url and url/ to work as expected
-			$rewrite_tpl_vars['{EXT_' . strtoupper($type) . '}'] = sprintf($spritf_tpl['ext'] , $seo_ext[$type]) . ($_value ? '' : '?');
+			$rewrite_tpl_vars['{EXT_' . strtoupper($type) . '}'] = sprintf($spritf_tpl['ext'], $seo_ext[$type]) . ($_value ? '' : '?');
 		}
 
 		$rewrite_tpl_vars['{PAGE_PAGINATION}'] = $reg_ex_page;
@@ -1373,7 +1373,7 @@ RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}{STATIC_INDEX}{EXT_INDEX}$ {DEFAULT_SLASH
 		$rewrite_rules += [
 			'forum' => '# FORUM ALL MODES
 RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}({STATIC_FORUM}|[a-z0-9_-]*{DELIM_FORUM})([0-9]+){FORUM_PAGINATION}$ {DEFAULT_SLASH}{PHPBB_RPATH}viewforum.{PHP_EX}?f=$2&start=$4 [QSA,L,NC]',
-				'topic_vfolder' => '# TOPIC WITH VIRTUAL FOLDER ALL MODES
+			'topic_vfolder' => '# TOPIC WITH VIRTUAL FOLDER ALL MODES
 RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}({STATIC_FORUM}|[a-z0-9_-]*{DELIM_FORUM})([0-9]+)/({STATIC_TOPIC}|[a-z0-9_-]*{DELIM_TOPIC})([0-9]+){TOPIC_PAGINATION}$ {DEFAULT_SLASH}{PHPBB_RPATH}viewtopic.{PHP_EX}?f=$2&t=$4&start=$6 [QSA,L,NC]',
 
 			'topic_nofid' => '# TOPIC WITHOUT FORUM ID & DELIM ALL MODES
@@ -1436,7 +1436,7 @@ RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}{STATIC_LEADERS}{EXT_LEADERS}$ {DEFAULT_S
 # THESE LINES MUST BE LOCATED AT THE END OF YOUR HTACCESS TO WORK PROPERLY',
 		];
 
-		if (trim($this->core->seo_ext['forum'],'/'))
+		if (trim($this->core->seo_ext['forum'], '/'))
 		{
 			$rewrite_rules += [
 				'forum_noid' => [
@@ -1584,7 +1584,6 @@ RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}' . $fix_left_match . '.+/(styles/.*|imag
 			]);
 
 			return $html_output;
-
 		}
 		else
 		{
@@ -1599,8 +1598,8 @@ RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}' . $fix_left_match . '.+/(styles/.*|imag
 	}
 
 	/**
-	*  get_mods_server_conf Get all mods server_conf tpls
-	*/
+	 *  get_mods_server_conf Get all mods server_conf tpls
+	 */
 	function get_mods_server_conf()
 	{
 		$all_ht_tpl = ['pos1' => '', 'pos2' => ''];
@@ -1646,8 +1645,8 @@ RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}' . $fix_left_match . '.+/(styles/.*|imag
 	}
 
 	/**
-	*  set_phpbb_seo_links Builds links to support threads
-	*/
+	 *  set_phpbb_seo_links Builds links to support threads
+	 */
 	function set_phpbb_seo_links()
 	{
 		$modrtype_lang = [];
@@ -1703,7 +1702,7 @@ RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}' . $fix_left_match . '.+/(styles/.*|imag
 			$modrtype_lang['ulinkurl'] = $modrtype_lang['modrlinks_en']['u'];
 			$modrtype_lang['uforumlinkurl'] = $modrtype_lang['modrforumlinks_en']['u'];
 		}
-		*/
+		 */
 		$modrtype_lang['linkurl'] = $modrtype_lang['modrlinks_en'][$this->core->modrtype];
 		$modrtype_lang['forumlinkurl'] = $modrtype_lang['modrforumlinks_en'][$this->core->modrtype];
 		$modrtype_lang['ulinkurl'] = $modrtype_lang['modrlinks_en']['u'];
@@ -1718,8 +1717,8 @@ RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}' . $fix_left_match . '.+/(styles/.*|imag
 	}
 
 	/**
-	*  check_cache_folder Validates the cache folder status
-	*/
+	 *  check_cache_folder Validates the cache folder status
+	 */
 	function check_cache_folder($cache_dir, $msg = true)
 	{
 		$exists = $write = $inner_write = false;
@@ -1803,8 +1802,8 @@ RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}' . $fix_left_match . '.+/(styles/.*|imag
 	}
 
 	/**
-	* write_cache( ) will write the cached file and keep backups.
-	*/
+	 * write_cache( ) will write the cached file and keep backups.
+	 */
 	function write_cache($file, $update)
 	{
 		if (!$this->core->cache_config['cache_enable'])
@@ -1816,7 +1815,7 @@ RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}' . $fix_left_match . '.+/(styles/.*|imag
 		@copy($file, $file . '.old');
 		$handle = @fopen($file, 'wb');
 		@fputs($handle, $update);
-		@fclose ($handle);
+		@fclose($handle);
 		unset($update);
 		@umask(0000);
 		phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);
@@ -1828,11 +1827,11 @@ RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}' . $fix_left_match . '.+/(styles/.*|imag
 	}
 
 	/**
-	*  select_multiple($value, $key, $select_ary)
-	*/
+	 *  select_multiple($value, $key, $select_ary)
+	 */
 	function select_multiple($value, $key, $select_ary)
 	{
-		$size = min(12,count($select_ary));
+		$size = min(12, count($select_ary));
 		$html = '<select multiple="multiple" id="' . $key . '" name="multiple_' . $key . '[]" size="' . $size . '">';
 
 		foreach ($select_ary as $sel_key => $sel_data)
@@ -1856,8 +1855,8 @@ RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}' . $fix_left_match . '.+/(styles/.*|imag
 	}
 
 	/**
-	*  forum_select() // custom forum select setup
-	*/
+	 *  forum_select() // custom forum select setup
+	 */
 	function forum_select($ignore_acl = true, $ignore_nonpost = false, $ignore_emptycat = false, $only_acl_post = false)
 	{
 		$select_ary = make_forum_select(false, false, $ignore_acl, $ignore_nonpost, $ignore_emptycat, $only_acl_post, true);
@@ -1874,8 +1873,8 @@ RewriteRule ^{WIERD_SLASH}{PHPBB_LPATH}' . $fix_left_match . '.+/(styles/.*|imag
 	}
 
 	/**
-	* Pick a language, any language ... or no language
-	*/
+	 * Pick a language, any language ... or no language
+	 */
 	function language_select($default = '')
 	{
 		return '<option value="">' . $this->language->lang('DISABLED') . '</option>' . language_select($default);

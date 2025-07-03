@@ -1,13 +1,14 @@
 <?php
+
 /**
-*
-* acp_usu [English]
-* @package Ultimate phpBB SEO Friendly URL
-* @version $$
-* @copyright (c) 2017 www.phpBB-SEO.ir
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
+ *
+ * acp_usu [English]
+ * @package Ultimate phpBB SEO Friendly URL
+ * @version $$
+ * @copyright (c) 2017 www.phpBB-SEO.ir
+ * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ *
+ */
 
 /**
  * DO NOT CHANGE
@@ -43,7 +44,7 @@ $lang = array_merge($lang, [
 	'ACP_MOD_REWRITE'	=> 'URL Rewriting settings',
 	// ACP phpBB seo class
 	'ACP_PHPBB_SEO_CLASS'	=> 'phpBB SEO Class settings',
-	'ACP_PHPBB_SEO_CLASS_EXPLAIN'	=> 'Here you can set up various options of the phpBB SEO %1$s mod (%2$s).<br/>The various default settings such as the delimiters and suffixes still must be set up in <b>phpBB/ext/phpbbseo/usu/customise.php</b>, since changing these implies an .htaccess update and most likely appropriate redirections.%3$s',
+	'ACP_PHPBB_SEO_CLASS_EXPLAIN'	=> 'Here you can set up various options of the phpBB SEO extension.<br/>The various default settings such as the delimiters and suffixes still must be set up in <b>phpBB/ext/phpbbseo/usu/customise.php</b>, since changing these implies an .htaccess update and most likely appropriate redirections.',
 	'ACP_PHPBB_SEO_VERSION' => 'Version',
 	'ACP_PHPBB_SEO_MODE' => 'Mode',
 	'ACP_SEO_SUPPORT_FORUM' => 'Support Forum',
@@ -278,7 +279,7 @@ $lang = array_merge($lang, [
 	'ACP_ZERO_DUPE_MSG' => 'Post',
 	'ACP_ZERO_DUPE_GUEST' => 'Guest',
 	'ACP_ZERO_DUPE_ALL' => 'All',
-	'zero_dupe' =>'Zero duplicate',
+	'zero_dupe' => 'Zero duplicate',
 	'zero_dupe_explain' => 'The following settings concerns the Zero duplicate, you can modify them upon your needs.<br/>These do not imply any .htaccess update.',
 	'zero_dupe_on' => 'Activate the Zero duplicate',
 	'zero_dupe_on_explain' => 'Allow to activate and deactivate the Zero duplicate redirections.',
