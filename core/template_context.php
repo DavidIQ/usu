@@ -126,22 +126,19 @@ class template_context extends \phpbb\template\context
 				{
 					case 'viewforum.' . $this->php_ext:
 					case 'viewtopic.' . $this->php_ext:
-						$fragment = parse_url($split_url[0], PHP_URL_FRAGMENT) ?? '';
+						$fragment = parse_url($split_url[1], PHP_URL_FRAGMENT) ?? '';
 						$fragment = !empty($fragment) ? "#{$fragment}" : '';
 						$url_params = [];
 						parse_str(str_replace($fragment, '', str_replace('&amp;', '&', isset($split_url[1]) ? $split_url[1] : '')), $url_params);
-						$start = isset($url_params['start']) ? "&amp;start={$url_params['start']}" : '';
-						if (isset($url_params['p']))
+						$param_value = '';
+						$check_params = ['p', 't', 'f'];
+						foreach ($check_params as $param)
 						{
-							$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", "p={$url_params['p']}") . $fragment;
-						}
-						else if (isset($url_params['t']))
-						{
-							$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", "t={$url_params['t']}{$start}") . $fragment;
-						}
-						else if (isset($url_params['f']))
-						{
-							$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", "f={$url_params['f']}{$start}") . $fragment;
+							if ($this->get_param($url_params, $param, $fragment, $param_value))
+							{
+								$varval = $this->core->url_rewrite("{$this->phpbb_root_path}{$file_path[1]}", "{$param}={$param_value}{$url_params}", true, false, false, !empty($url_params)) . $fragment;
+								break;
+							}
 						}
 						break;
 
@@ -199,6 +196,36 @@ class template_context extends \phpbb\template\context
 					}
 				}
 			}
+		}
+	}
+
+	/**
+	 * Get a parameter from the URL parameters array.
+	 *
+	 * @param array|string $params The URL parameters array
+	 * @param string $param_key The key of the parameter to retrieve
+	 * @param string $fragment The fragment to remove from the parameter value
+	 * @param string &$param_value The variable to store the retrieved parameter value
+	 * 
+	 * @return bool True if the parameter was found and retrieved, false otherwise
+	 */
+	private function get_param(array|string &$params, string $param_key, string $fragment, string &$param_value): bool
+	{
+		$value = isset($params[$param_key]) ? str_replace($fragment, '', $params[$param_key]) : false;
+		if ($value !== false)
+		{
+			$param_value = $value;
+			$params = array_filter($params, function ($key) use ($param_key)
+			{
+				return $key !== $param_key;
+			}, ARRAY_FILTER_USE_KEY);
+			$params = !empty($params) ? '&amp;' . http_build_query($params) : '';
+			return true;
+		}
+		else
+		{
+			$param_value = '';
+			return false;
 		}
 	}
 }

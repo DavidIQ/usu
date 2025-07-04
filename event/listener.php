@@ -126,6 +126,7 @@ class listener implements EventSubscriberInterface
 			'core.display_forums_modify_category_template_vars'	=> 'core_display_forums_modify_template_vars',
 			'core.viewforum_modify_page_title'					=> 'core_viewforum_modify_page_title',
 			'core.viewtopic_modify_forum_id'					=> 'core_viewtopic_modify_forum_id',
+			'core.search_modify_tpl_ary'						=> 'core_search_modify_tpl_ary',
 		];
 	}
 
@@ -591,16 +592,6 @@ class listener implements EventSubscriberInterface
 		$template_row = $event[$varname];
 		$template_row['U_VIEWFORUM'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $row['forum_id'], true, false, false, true);
 
-		if (!empty($row['forum_last_post_id']))
-		{
-			/*$last_post = [
-				'post_id' => $row['forum_last_post_id'],
-				'topic_url' => $row['topic_url'],
-			];*/
-			// TODO: probably need to get the topic info for this
-			//$this->core->prepare_topic_url($last_post, $row['forum_id']);
-		}
-
 		$event[$varname] = $template_row;
 	}
 
@@ -625,6 +616,32 @@ class listener implements EventSubscriberInterface
 			$topic_row['U_NEWEST_POST']	= $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", $view_topic_url_params . '&amp;view=unread#unread', true, false, false, true);
 			$topic_row['U_LAST_POST'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'], true, false, false, true);
 			$event['topic_row'] = $topic_row;
+		}
+	}
+
+	public function core_search_modify_tpl_ary($event)
+	{
+		$row = $event['row'];
+		$tpl_ary = $event['tpl_ary'];
+
+		if (isset($tpl_ary['U_VIEW_TOPIC']))
+		{
+			$forum_id = $row['forum_id'];
+			$this->core->prepare_topic_url($row, $forum_id);
+			$this->core->prepare_forum_url($row);
+
+			$tpl_ary['U_LAST_POST'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'], true, false, false, true);
+
+			$view_topic_url = $tpl_ary['U_VIEW_TOPIC'];
+			$view_topic_url_params = parse_url($view_topic_url, PHP_URL_QUERY);
+
+			$tpl_ary['U_VIEW_TOPIC'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", $view_topic_url_params, true, false, false, true);
+			$tpl_ary['U_VIEW_FORUM'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewforum.{$this->php_ext}", "f={$forum_id}", true, false, false, true);
+			if (!empty($tpl_ary['U_VIEW_POST']))
+			{
+				$tpl_ary['U_VIEW_POST'] = $this->core->url_rewrite("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'p=' . $row['post_id'] . '#p' . $row['post_id'], true, false, false, true);
+			}
+			$event['tpl_ary'] = $tpl_ary;
 		}
 	}
 
