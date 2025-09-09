@@ -157,7 +157,7 @@ trait url
 			$this->seo_url['forum'][$id] = sprintf($this->sftpl['forum'], $this->format_url($forum_data['forum_name'], $this->seo_static['forum']) . $this->seo_delim['forum'] . $id, $id);
 		}
 
-		return $this->seo_url['forum'][$id];
+		return isset($this->seo_url['forum'][$id]) ? $this->seo_url['forum'][$id] : '';
 	}
 
 	/**
