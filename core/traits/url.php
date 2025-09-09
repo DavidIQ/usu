@@ -152,7 +152,7 @@ trait url
 	{
 		$id = max(0, (int) $forum_data['forum_id']);
 
-		if (empty($this->seo_url['forum'][$id]))
+		if (empty($this->seo_url['forum'][$id]) && isset($forum_data['forum_name']))
 		{
 			$this->seo_url['forum'][$id] = sprintf($this->sftpl['forum'], $this->format_url($forum_data['forum_name'], $this->seo_static['forum']) . $this->seo_delim['forum'] . $id, $id);
 		}
