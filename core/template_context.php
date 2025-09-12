@@ -82,6 +82,21 @@ class template_context extends \phpbb\template\context
 					}
 				}
 				break;
+
+			case 'forumrow.subforum':
+				$split_url = explode('?', $vararray['U_SUBFORUM'], 2);
+				if (isset($split_url[1]))
+				{
+					$query_string = str_replace('&amp;', '&', $split_url[1]);
+					parse_str($query_string, $url_params);
+					$subforum_id = isset($url_params['f']) ? (int) $url_params['f'] : 0;
+					$forum_data = ['forum_id' => $subforum_id, 'forum_name' => $vararray['SUBFORUM_NAME'] ?? ''];
+					if (!empty($forum_data['forum_name']))
+					{
+						$this->core->prepare_forum_url($forum_data);
+					}
+				}
+				break;
 		}
 
 		foreach ($vararray as $varname => &$varval)
